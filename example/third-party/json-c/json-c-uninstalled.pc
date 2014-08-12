@@ -1,0 +1,11 @@
+prefix=
+exec_prefix=
+libdir=/home/liutao/code/nDPI/example/third-party/json-c
+includedir=/home/liutao/code/nDPI/example/third-party/json-c
+
+Name: json
+Description: JSON implementation in C
+Version: 0.12.99
+Requires:
+Libs:  -L/home/liutao/code/nDPI/example/third-party/json-c -ljson-c
+Cflags: -I/home/liutao/code/nDPI/example/third-party/json-c

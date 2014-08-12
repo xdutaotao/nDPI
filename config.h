@@ -7,11 +7,20 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
+/* Define to 1 if you have the `pcap' library (-lpcap). */
+#define HAVE_LIBPCAP 1
+
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #define HAVE_NETINET_IN_H 1
+
+/* Define if you have POSIX threads libraries and header files. */
+#define HAVE_PTHREAD 1
+
+/* Have PTHREAD_PRIO_INHERIT. */
+/* #undef HAVE_PTHREAD_PRIO_INHERIT */
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -39,34 +48,38 @@
 #define LT_OBJDIR ".libs/"
 
 /* Last SVN change */
-#define NDPI_SVN_DATE "2014-07-28 17:38:31 +0800 (Mon, 28 Jul 2014)"
+#define NDPI_SVN_DATE ""
 
 /* SVN Release */
-#define NDPI_SVN_RELEASE "r7995"
+#define NDPI_SVN_RELEASE "r"
 
 /* Name of package */
-#define PACKAGE "ndpi"
+#define PACKAGE "libndpi"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "nDPI"
+#define PACKAGE_NAME "libndpi"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "nDPI 1.4.0"
+#define PACKAGE_STRING "libndpi 1.4.99"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "ndpi"
+#define PACKAGE_TARNAME "libndpi"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.4.0"
+#define PACKAGE_VERSION "1.4.99"
+
+/* Define to necessary symbol if this constant uses a non-standard name on
+   your system. */
+/* #undef PTHREAD_CREATE_JOINABLE */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.4.0"
+#define VERSION "1.4.99"

@@ -23,7 +23,7 @@
  */
 
 
-#include "ndpi_utils.h"
+#include "ndpi_api.h"
 
 // #define CERTIFICATE_DEBUG 1
 
@@ -126,7 +126,6 @@ int getSSLcertificate(struct ndpi_detection_module_struct *ndpi_struct,
     u_int8_t handshake_protocol = packet->payload[5]; /* handshake protocol a bit misleading, it is message type according TLS specs */
 
     memset(buffer, 0, buffer_len);
-
 
     /* Truncate total len, search at least in incomplete packet */
     if (total_len > packet->payload_packet_len)
@@ -381,13 +380,6 @@ static void ssl_mark_and_payload_search_for_other_protocols(struct
        && (!(flow->l4.tcp.ssl_seen_client_cert && flow->l4.tcp.ssl_seen_server_cert))) {
       /* SSL without certificate (Skype, Ultrasurf?) */
       ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL_NO_CERT);
-#ifdef NDPI_PROTOCOL_SKYPE
-      //printf("[SSL] %08X -> %08X\n", packet->iph->saddr, packet->iph->daddr);
-#ifdef USE_SKYPE_HEURISTICS
-      if(packet->iph)
-	add_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr);
-#endif
-#endif
     } else
       ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL);
   }
@@ -540,8 +532,6 @@ void ndpi_search_ssl_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
   NDPI_LOG(NDPI_PROTOCOL_SSL, ndpi_struct, NDPI_LOG_DEBUG, "search ssl\n");
 
   {
-
-#ifdef NDPI_SERVICE_WHATSAPP
     /* Check if this is whatsapp first (this proto runs over port 443) */
     if((packet->payload_packet_len > 5)
        && ((packet->payload[0] == 'W')
@@ -551,10 +541,7 @@ void ndpi_search_ssl_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 	   && (packet->payload[3] <= 9))) {
       ndpi_int_add_connection(ndpi_struct, flow, NDPI_SERVICE_WHATSAPP, NDPI_REAL_PROTOCOL);
       return;
-    } else 
-#endif
-
-    {
+    } else {
       /* No whatsapp, let's try SSL */
       if(sslDetectProtocolFromCertificate(ndpi_struct, flow) > 0)
 	return;

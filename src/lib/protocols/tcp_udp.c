@@ -19,8 +19,7 @@
  */
 
 
-#include "ndpi_utils.h"
-
+#include "ndpi_api.h"
 
 
 u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struct, 
@@ -28,16 +27,12 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
 				 u_int32_t saddr, u_int32_t daddr, /* host endianess */
 				 u_int16_t sport, u_int16_t dport) /* host endianess */
 {
-
-#ifdef NDPI_PROTOCOL_DROPBOX
   if(protocol == IPPROTO_UDP) {
     if((sport == dport) && (sport == 17500)) {
       return(NDPI_PROTOCOL_DROPBOX);
     }
   }
-#endif
 
-#ifdef NDPI_PROTOCOL_CITRIX_ONLINE
     /*
       Citrix GotoMeeting (AS16815, AS21866)
       216.115.208.0/20
@@ -53,9 +48,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        ) {
       return(NDPI_PROTOCOL_CITRIX_ONLINE);
     }
-#endif
 
-#ifdef NDPI_PROTOCOL_WEBEX
     /*
       Webex
       66.114.160.0/20
@@ -64,10 +57,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) ==0x4272A000 /* 66.114.160.0 */)) {
       return(NDPI_PROTOCOL_WEBEX);
     }
-#endif
 
-
-#ifdef NDPI_SERVICE_APPLE
     /*
       Apple (FaceTime, iMessage,...)
       17.0.0.0/8
@@ -76,9 +66,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        || ((daddr & 0xFF000000 /* 255.0.0.0 */) == 0x11000000 /* 17.0.0.0 */)) {
       return(NDPI_SERVICE_APPLE);
     }
-#endif
 
-#ifdef NDPI_PROTOCOL_DROPBOX
     /*
       Dropbox
       108.160.160.0/20
@@ -94,10 +82,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) == 0x6CA0A000 /* 108.160.160.0 */)) {
       return(NDPI_PROTOCOL_DROPBOX);
     }
-#endif
 
-
-#ifdef NDPI_PROTOCOL_SKYPE
     /* 
        Skype
        157.56.0.0/14, 157.60.0.0/16, 157.54.0.0/15
@@ -110,10 +95,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        ) {
       return(NDPI_PROTOCOL_SKYPE);
     }
-#endif
   
-
-#ifdef NDPI_SERVICE_GOOGLE
     /*
       Google
       173.194.0.0/16
@@ -122,9 +104,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) ==0xADC20000 /* 173.194.0.0 */)) {      
       return(NDPI_SERVICE_GOOGLE);
     }
-#endif
 
-#ifdef NDPI_PROTOCOL_UBUNTUONE
     /*
       Ubuntu One
       91.189.89.0/21 (255.255.248.0)
@@ -133,7 +113,6 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        || ((daddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0 */)) {
       return(NDPI_PROTOCOL_UBUNTUONE);
     }    
-#endif
 
   return(NDPI_PROTOCOL_UNKNOWN);
 }
@@ -150,11 +129,7 @@ void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct, st
   
   if(packet->iph /* IPv4 Only: we need to support packet->iphv6 at some point */) {
     proto = ndpi_search_tcp_or_udp_raw(ndpi_struct,
-#ifdef NDPI_DETECTION_SUPPORT_IPV6
 				       flow->packet.iph ? flow->packet.iph->protocol : flow->packet.iphv6->nexthdr,
-#else
-				       flow->packet.iph->protocol,
-#endif
 				       ntohl(packet->iph->saddr), 
 				       ntohl(packet->iph->daddr),
 				       sport, dport);
