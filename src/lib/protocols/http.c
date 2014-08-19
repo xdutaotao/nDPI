@@ -31,9 +31,8 @@ static void ndpi_int_http_add_connection(struct ndpi_detection_module_struct *nd
 					 u_int32_t protocol) {
 
 
-  if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
+  if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN || flow->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP) {
     /* This is HTTP and it is not a sub protocol (e.g. skype or dropbox) */
-
 
     if(protocol != NDPI_PROTOCOL_HTTP) {
       ndpi_search_tcp_or_udp(ndpi_struct, flow);
@@ -288,15 +287,20 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 	     packet->user_agent_line.len, packet->user_agent_line.ptr);
 
     ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->user_agent_line.ptr, packet->user_agent_line.len);
+
+	if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_HTTP) {
+		ndpi_int_http_add_connection(ndpi_struct, flow, packet->detected_protocol_stack[0]);
+		return; /* set packet proto to flow*/
+    }
   }
 
   /* check for host line */
   if(packet->host_line.ptr != NULL) {
     u_int len;
 
-    NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HOST Line found %.*s\n",
-	     packet->host_line.len, packet->host_line.ptr);
-    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->host_line.ptr, packet->host_line.len);
+    //NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HOST Line found %.*s\n",
+	     //packet->host_line.len, packet->host_line.ptr);
+    //ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->host_line.ptr, packet->host_line.len);
 
     /* Copy result for nDPI apps */
     len = ndpi_min(packet->host_line.len, sizeof(flow->host_server_name)-1);
@@ -349,6 +353,11 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 	     packet->content_line.len, packet->content_line.ptr);
     
     ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->content_line.ptr, packet->content_line.len);
+
+	if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_HTTP) {
+		ndpi_int_http_add_connection(ndpi_struct, flow, packet->detected_protocol_stack[0]);
+		return; /* set packet proto to flow*/
+    }
   }
 
   /* check user agent here too */
