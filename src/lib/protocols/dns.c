@@ -283,7 +283,11 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	   matched a subprotocol
 	*/
 	NDPI_LOG(NDPI_PROTOCOL_DNS, ndpi_struct, NDPI_LOG_DEBUG, "found DNS.\n");      
+#ifdef NDPI_PROTOCOL_LLMNR
 	ndpi_int_add_connection(ndpi_struct, flow, (dport == 5355) ? NDPI_PROTOCOL_LLMNR : NDPI_PROTOCOL_DNS, NDPI_REAL_PROTOCOL);
+#else
+	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DNS, NDPI_REAL_PROTOCOL);
+#endif
       }
     } else {
       flow->protos.dns.bad_packet = 1;

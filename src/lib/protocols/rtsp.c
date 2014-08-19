@@ -100,7 +100,9 @@ void ndpi_search_rtsp_tcp_udp(struct ndpi_detection_module_struct
     }
   }
   if (packet->udp != NULL && packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN
+#ifdef NDPI_PROTOCOL_RTP
       && ((NDPI_COMPARE_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTP) == 0)
+#endif
 #ifdef NDPI_PROTOCOL_RTCP
 	  || (NDPI_COMPARE_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTCP) == 0)
 #endif

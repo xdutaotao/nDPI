@@ -2122,14 +2122,19 @@ void ndpi_set_protocol_detection_bitmask2(struct ndpi_detection_module_struct *n
 				 NDPI_CONTENT_FLASH);
 #endif
 
+#ifdef NDPI_CONTENT_MMS
   NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_struct->callback_buffer[a].excluded_protocol_bitmask,
 				 NDPI_CONTENT_MMS);
+#endif
   // #ifdef NDPI_PROTOCOL_RTSP
   //   NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_struct->callback_buffer[a].excluded_protocol_bitmask,
   // 				 NDPI_PROTOCOL_RTSP);
   // #endif
+
+#ifdef NDPI_PROTOCOL_XBOX
   NDPI_DEL_PROTOCOL_FROM_BITMASK(ndpi_struct->callback_buffer[a].excluded_protocol_bitmask,
 				 NDPI_PROTOCOL_XBOX);
+#endif
 
   NDPI_BITMASK_SET(ndpi_struct->generic_http_packet_bitmask,
 		   ndpi_struct->callback_buffer[a].detection_bitmask);
@@ -5080,13 +5085,17 @@ unsigned int ndpi_find_port_based_protocol(struct ndpi_detection_module_struct *
 					   u_int8_t proto,
 					   u_int32_t shost, u_int16_t sport,
 					   u_int32_t dhost, u_int16_t dport) {
+#if 0
   /* Skyfile (host 193.252.234.246 or host 10.10.102.80) */
   if((shost == 0xC1FCEAF6) || (dhost == 0xC1FCEAF6)
      || (shost == 0x0A0A6650) || (dhost == 0x0A0A6650)) {
+ #ifdef NDPI_PROTOCOL_SKYFILE_PREPAID
     if((sport == 4708) || (dport == 4708)) return(NDPI_PROTOCOL_SKYFILE_PREPAID);
     else if((sport == 4709) || (dport == 4709)) return(NDPI_PROTOCOL_SKYFILE_RUDICS);
     else if((sport == 4710) || (dport == 4710)) return(NDPI_PROTOCOL_SKYFILE_POSTPAID);
   }
+#endif
+#endif
 
   return(NDPI_PROTOCOL_UNKNOWN);
 }

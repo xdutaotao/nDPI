@@ -498,6 +498,7 @@ typedef struct _ndpi_automa {
   u_int8_t ac_automa_finalized;
 } ndpi_automa;
 
+
 typedef struct ndpi_detection_module_struct {
   NDPI_PROTOCOL_BITMASK detection_bitmask;
   NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;
@@ -528,7 +529,7 @@ typedef struct ndpi_detection_module_struct {
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   /* debug callback, only set when debug is used */
-  ndpi_debug_function_ptr ndpi_debug_printf;
+  void* ndpi_debug_printf;
   const char *ndpi_debug_print_file;
   const char *ndpi_debug_print_function;
   u_int32_t ndpi_debug_print_line;

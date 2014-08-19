@@ -289,6 +289,7 @@ static void ndpi_search_yahoo_tcp(struct ndpi_detection_module_struct *ndpi_stru
 	    || memcmp(packet->payload, "<RVWCFG>", 8) == 0 || memcmp(packet->payload, "<RUPCFG>", 8) == 0)) {
       NDPI_LOG(NDPI_PROTOCOL_YAHOO, ndpi_struct, NDPI_LOG_TRACE,
 	       "YAHOO SNDIMG or REQIMG or RVWCFG or RUPCFG FOUND\n");
+#ifdef NDPI_PROTOCOL_YAHOO
       if (src != NULL) {
 	if (memcmp(packet->payload, "<SNDIMG>", 8) == 0) {
 	  src->yahoo_video_lan_dir = 0;
@@ -306,6 +307,7 @@ static void ndpi_search_yahoo_tcp(struct ndpi_detection_module_struct *ndpi_stru
 	dst->yahoo_video_lan_timer = packet->tick_timestamp;
 
       }
+#endif
       NDPI_LOG(NDPI_PROTOCOL_YAHOO, ndpi_struct, NDPI_LOG_DEBUG, "found YAHOO subtype VIDEO");
       ndpi_int_yahoo_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
       return;
