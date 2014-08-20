@@ -52,6 +52,8 @@
 
 #define MAX_NUM_READER_THREADS     16
 
+#define MAX_ID_SIZE 1024
+
 /**
  * @brief Set main components necessary to the detection
  * @details TODO
@@ -135,9 +137,22 @@ static struct reader_thread ndpi_thread_info[MAX_NUM_READER_THREADS];
  * @brief ID tracking
  */
 typedef struct ndpi_id {
-  u_int8_t ip[4];				//< Ip address
-  struct ndpi_id_struct *ndpi_id;		//< nDpi worker structure
+  u_int32_t ip;     // IP address
+  u_int32_t ref;    //ref counter by how many flows
+  struct ndpi_id_struct ndpi_id;		//< nDpi worker structure
+  char name[32];
 } ndpi_id_t;
+
+void* id_root; //id root for bsearch-tree
+
+static int id_cmp(const void *a, const void *b) {
+  struct ndpi_id *fa = (struct ndpi_id*)a;
+  struct ndpi_id *fb = (struct ndpi_id*)b;
+
+  if(fa->ip < fb->ip) return -1 ; 
+  else if(fa->ip > fb->ip ) return 1 ; 
+  else return 0;
+}
 
 static u_int32_t size_id_struct = 0;		//< ID tracking structure size
 
@@ -153,7 +168,7 @@ typedef struct ndpi_flow {
   u_int16_t upper_port;
   u_int8_t detection_completed, protocol;
   u_int16_t __padding;
-  struct ndpi_flow_struct *ndpi_flow;
+  struct ndpi_flow_struct ndpi_flow;
   char lower_name[32], upper_name[32];
 
   u_int64_t last_seen;
@@ -164,7 +179,7 @@ typedef struct ndpi_flow {
 
   char host_server_name[256];
 
-  void *src_id, *dst_id;
+  ndpi_id_t *src_id, *dst_id;
 } ndpi_flow_t;
 
 
@@ -422,10 +437,11 @@ static void printFlow(u_int16_t thread_id, struct ndpi_flow *flow) {
   
   if(!json_flag) {
 #if 1
-    printf("\t%s %s:%u <-> %s:%u\n",
+    printf("\t%s %s:%u <-> %s:%u \t[%d: %s, size: %d pkt, %d bytes]\n",
 	   ipProto2Name(flow->protocol),
 	   flow->lower_name, ntohs(flow->lower_port),
-	   flow->upper_name, ntohs(flow->upper_port));
+	   flow->upper_name, ntohs(flow->upper_port),
+       flow->detected_protocol, ndpi_get_proto_name(ndpi_thread_info[thread_id].ndpi_struct, flow->detected_protocol), flow->packets, flow->bytes);
 
 #else
   printf("\t%u", ++num_flows);
@@ -464,21 +480,54 @@ static void printFlow(u_int16_t thread_id, struct ndpi_flow *flow) {
   }  
 }
 
-/* ***************************************************** */
+static void free_ndpi_id(ndpi_id_t * id){
+    if(!id) return ;
 
-static void free_ndpi_flow(struct ndpi_flow *flow) {
-  if(flow->ndpi_flow) { ndpi_free(flow->ndpi_flow); flow->ndpi_flow = NULL; }
-  if(flow->src_id)    { ndpi_free(flow->src_id); flow->src_id = NULL;       }
-  if(flow->dst_id)    { ndpi_free(flow->dst_id); flow->dst_id = NULL;       }
+    ndpi_node* ret = (ndpi_node*)ndpi_tfind(id,&id_root,id_cmp);
+    if(!ret){
+        printf("ERROR: not found such id: %s .\n", id->name);
+        return;
+    }
+
+    ndpi_id_t * t = (ndpi_id_t*)ret->key;
+    if(t->ref <= 1){
+        //delete id node from id_root
+        ndpi_tdelete(id,&id_root,id_cmp);
+        ndpi_free(t);
+#if 0
+        printf("INFO: ID %s removed.\n", t->name);
+#endif
+    }else{
+        t->ref--;
+#if 0
+        printf("INFO: ID %s ref -- .\n", t->name);
+#endif
+    }
+    return;
 }
 
 /* ***************************************************** */
+
+static void free_ndpi_flow(struct ndpi_flow *flow) {
+//#if 0
+  if(flow->src_id)    { free_ndpi_id(flow->src_id); flow->src_id = NULL;       }
+  if(flow->dst_id)    { free_ndpi_id(flow->dst_id); flow->dst_id = NULL;       }
+//#endif
+#if 0
+  if(flow){
+    ndpi_free(flow);
+    flow=NULL;
+  }
+#endif
+}
+
+/* ***************************************************** */
+
 
 static void ndpi_flow_freer(void *node) {
   struct ndpi_flow *flow = (struct ndpi_flow*)node;
 
   free_ndpi_flow(flow);
-  ndpi_free(flow);
 }
 
 /* ***************************************************** */
@@ -576,9 +625,19 @@ static void node_proto_guess_walker(const void *node, ndpi_VISIT which, int dept
       }
     }
 
+#if 0
+    printf("TT: detected_protocol: %d \n", flow->detected_protocol);
+#endif
+    if(flow->detected_protocol < NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1 ){
     ndpi_thread_info[thread_id].stats.protocol_counter[flow->detected_protocol]       += flow->packets;
     ndpi_thread_info[thread_id].stats.protocol_counter_bytes[flow->detected_protocol] += flow->bytes;
     ndpi_thread_info[thread_id].stats.protocol_flows[flow->detected_protocol]++;
+    }
+#if 0
+    else{
+            printf("TT:ERROR: protocol id is wrong!!!!!!!!.\n");
+    }
+#endif
   }
 }
 
@@ -617,6 +676,7 @@ static struct ndpi_flow *get_ndpi_flow(u_int16_t thread_id,
   u_int16_t lower_port;
   u_int16_t upper_port;
   struct ndpi_flow flow;
+  struct ndpi_id tmp_id;
   void *ret;
   u_int8_t *l3;
 
@@ -723,8 +783,8 @@ static struct ndpi_flow *get_ndpi_flow(u_int16_t thread_id,
       struct ndpi_flow *newflow = (struct ndpi_flow*)malloc(sizeof(struct ndpi_flow));
 
       if(newflow == NULL) {
-	printf("[NDPI] %s(1): not enough memory\n", __FUNCTION__);
-	return(NULL);
+	    printf("[NDPI] %s(1): not enough memory\n", __FUNCTION__);
+	    return(NULL);
       }
 
       memset(newflow, 0, sizeof(struct ndpi_flow));
@@ -733,35 +793,72 @@ static struct ndpi_flow *get_ndpi_flow(u_int16_t thread_id,
       newflow->lower_port = lower_port, newflow->upper_port = upper_port;
 
       if(version == 4) {
-	inet_ntop(AF_INET, &lower_ip, newflow->lower_name, sizeof(newflow->lower_name));
-	inet_ntop(AF_INET, &upper_ip, newflow->upper_name, sizeof(newflow->upper_name));
+	    inet_ntop(AF_INET, &lower_ip, newflow->lower_name, sizeof(newflow->lower_name));
+	    inet_ntop(AF_INET, &upper_ip, newflow->upper_name, sizeof(newflow->upper_name));
       } else {
-	inet_ntop(AF_INET6, &iph6->ip6_src, newflow->lower_name, sizeof(newflow->lower_name));
-	inet_ntop(AF_INET6, &iph6->ip6_dst, newflow->upper_name, sizeof(newflow->upper_name));
+	    inet_ntop(AF_INET6, &iph6->ip6_src, newflow->lower_name, sizeof(newflow->lower_name));
+	    inet_ntop(AF_INET6, &iph6->ip6_dst, newflow->upper_name, sizeof(newflow->upper_name));
       }
 
-      if((newflow->ndpi_flow = calloc(1, size_flow_struct)) == NULL) {
-	printf("[NDPI] %s(2): not enough memory\n", __FUNCTION__);
-	return(NULL);
+      //search id to see if it's already existed
+      tmp_id.ip = lower_ip;
+      ndpi_node *t=ndpi_tsearch(&tmp_id, &id_root, id_cmp);
+      if((void*)t->key != (void*)&tmp_id){ //found
+        newflow->src_id = (ndpi_id_t*)t->key;
+        ((ndpi_id_t*)t->key)->ref++;
+      }else{//not found,it's new
+        if((newflow->src_id = calloc(1, sizeof(ndpi_id_t))) == NULL) {
+	        printf("[NDPI] %s(3): not enough memory\n", __FUNCTION__);
+            free_ndpi_flow(newflow);
+	        return(NULL);
+        }
+#if 0
+        ndpi_id_t *v1,*v2;
+        v1 = (ndpi_id_t*)t->key;
+        v2 = (ndpi_id_t*)newflow->src_id;
+        if(v1->ip != v2->ip) printf("NOTE:XXXXXXXXXX %X != %X \n", v1->ip, v2->ip);
+#endif
+        memcpy(newflow->src_id,t->key,sizeof(ndpi_id_t));
+        t->key = (void*)newflow->src_id; // to new id
+        ((ndpi_id_t*)t->key)->ref = 1;
+        strcpy(((ndpi_id_t*)t->key)->name, newflow->lower_name);
+#if 0
+        printf("DEBUG: new ID: %s in.\n",newflow->lower_name);
+#endif
       }
 
-      if((newflow->src_id = calloc(1, size_id_struct)) == NULL) {
-	printf("[NDPI] %s(3): not enough memory\n", __FUNCTION__);
-	return(NULL);
+      tmp_id.ip = upper_ip;
+      t=ndpi_tsearch(&tmp_id,&id_root,id_cmp);
+      if((void*)t->key != (void*)&tmp_id){ //found
+        newflow->dst_id = (ndpi_id_t*)t->key;
+        ((ndpi_id_t*)t->key)->ref++;
+      }else{//not found,it's new
+        if((newflow->dst_id = calloc(1, sizeof(ndpi_id_t))) == NULL) {
+	        printf("[NDPI] %s(4): not enough memory\n", __FUNCTION__);
+            free_ndpi_flow(newflow);
+	        return(NULL);
+        }
+#if 0
+        ndpi_id_t *v1,*v2;
+        v1 = (ndpi_id_t*)t->key;
+        v2 = (ndpi_id_t*)newflow->dst_id;
+        if(v1->ip != v2->ip) printf("NOTE:XXXXXXXXXX %X != %X \n", v1->ip, v2->ip);
+#endif
+        memcpy(newflow->dst_id,t->key,sizeof(ndpi_id_t));
+        t->key = (void*)newflow->dst_id;
+        ((ndpi_id_t*)t->key)->ref = 1;
+        strcpy(((ndpi_id_t*)t->key)->name, newflow->upper_name);
+#if 0
+        printf("DEBUG: new ID: %s in.\n",newflow->upper_name);
+#endif
       }
 
-      if((newflow->dst_id = calloc(1, size_id_struct)) == NULL) {
-	printf("[NDPI] %s(4): not enough memory\n", __FUNCTION__);
-	return(NULL);
-      }
-      
       ndpi_tsearch(newflow, &ndpi_thread_info[thread_id].ndpi_flows_root[idx], node_cmp); /* Add */
       ndpi_thread_info[thread_id].stats.ndpi_flow_count++;
 
-      *src = newflow->src_id, *dst = newflow->dst_id;
+      *src = &(newflow->src_id->ndpi_id), *dst = &(newflow->dst_id->ndpi_id);
 
       // printFlow(thread_id, newflow);
-
       return(newflow);
     }
   } else {
@@ -769,9 +866,9 @@ static struct ndpi_flow *get_ndpi_flow(u_int16_t thread_id,
 
     if(flow->lower_ip == lower_ip && flow->upper_ip == upper_ip
        && flow->lower_port == lower_port && flow->upper_port == upper_port)
-      *src = flow->src_id, *dst = flow->dst_id;
+      *src = &(flow->src_id->ndpi_id), *dst = &(flow->dst_id->ndpi_id);
     else
-      *src = flow->dst_id, *dst = flow->src_id;
+      *src = &(flow->dst_id->ndpi_id), *dst = &(flow->src_id->ndpi_id);
 
     return flow;
   }
@@ -867,7 +964,7 @@ static unsigned int packet_processing(u_int16_t thread_id,
   if(flow != NULL) {
     ndpi_thread_info[thread_id].stats.ip_packet_count++;
     ndpi_thread_info[thread_id].stats.total_wire_bytes += rawsize + 24 /* CRC etc */, ndpi_thread_info[thread_id].stats.total_ip_bytes += rawsize;
-    ndpi_flow = flow->ndpi_flow;
+    ndpi_flow = &(flow->ndpi_flow);
     flow->packets++, flow->bytes += rawsize;
     flow->last_seen = time;
   } else {
@@ -899,7 +996,7 @@ static unsigned int packet_processing(u_int16_t thread_id,
       printf("%s\n", flow->ndpi_flow->l4.tcp.host_server_name);
 #endif
 
-    snprintf(flow->host_server_name, sizeof(flow->host_server_name), "%s", flow->ndpi_flow->host_server_name);
+    snprintf(flow->host_server_name, sizeof(flow->host_server_name), "%s", flow->ndpi_flow.host_server_name);
     free_ndpi_flow(flow);
 
     if(verbose > 1) {

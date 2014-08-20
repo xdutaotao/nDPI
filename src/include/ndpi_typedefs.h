@@ -122,6 +122,7 @@ typedef struct ndpi_id_struct {
 #endif
 #ifdef NDPI_PROTOCOL_THUNDER
   u_int32_t thunder_ts;
+  u_int16_t thunder_udp_port;
 #endif
 #ifdef NDPI_PROTOCOL_RTSP
   u_int32_t rtsp_timer;
