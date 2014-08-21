@@ -20,14 +20,13 @@
 extern "C" {
 #endif
 
-struct printbuf {
-  char *buf;
-  int bpos;
-  int size;
-};
+	struct printbuf {
+		char *buf;
+		int bpos;
+		int size;
+	};
 
-extern struct printbuf*
-printbuf_new(void);
+	extern struct printbuf *printbuf_new(void);
 
 /* As an optimization, printbuf_memappend_fast is defined as a macro
  * that handles copying data if the buffer is large enough; otherwise
@@ -36,8 +35,8 @@ printbuf_new(void);
  * Your code should not use printbuf_memappend directly--use
  * printbuf_memappend_fast instead.
  */
-extern int
-printbuf_memappend(struct printbuf *p, const char *buf, int size);
+	extern int
+	 printbuf_memappend(struct printbuf *p, const char *buf, int size);
 
 #define printbuf_memappend_fast(p, bufptr, bufsize)          \
 do {                                                         \
@@ -58,20 +57,20 @@ do {                                                         \
  *
  * If offset is -1, this starts at the end of the current data in the buffer.
  */
-extern int
-printbuf_memset(struct printbuf *pb, int offset, int charvalue, int len);
+	extern int
+	 printbuf_memset(struct printbuf *pb, int offset, int charvalue,
+			 int len);
 
-extern int
-sprintbuf(struct printbuf *p, const char *msg, ...);
+	extern int
+	 sprintbuf(struct printbuf *p, const char *msg, ...);
 
-extern void
-printbuf_reset(struct printbuf *p);
+	extern void
+	 printbuf_reset(struct printbuf *p);
 
-extern void
-printbuf_free(struct printbuf *p);
+	extern void
+	 printbuf_free(struct printbuf *p);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

@@ -73,12 +73,12 @@ static void test_printbuf_memappend(int *before_resize)
 
 	initial_size = pb->size;
 
-	while(pb->size == initial_size)
-	{
+	while (pb->size == initial_size) {
 		printbuf_memappend_fast(pb, "x", 1);
 	}
 	*before_resize = printbuf_length(pb) - 1;
-	printf("Appended %d bytes for resize: [%s]\n", *before_resize + 1, pb->buf);
+	printf("Appended %d bytes for resize: [%s]\n", *before_resize + 1,
+	       pb->buf);
 
 	printbuf_reset(pb);
 	printbuf_memappend_fast(pb, "bluexyz123", 3);
@@ -87,14 +87,16 @@ static void test_printbuf_memappend(int *before_resize)
 	char with_nulls[] = { 'a', 'b', '\0', 'c' };
 	printbuf_reset(pb);
 	printbuf_memappend_fast(pb, with_nulls, (int)sizeof(with_nulls));
-	printf("With embedded \\0 character: %d, [%s]\n", printbuf_length(pb), pb->buf);
+	printf("With embedded \\0 character: %d, [%s]\n", printbuf_length(pb),
+	       pb->buf);
 
 	printbuf_free(pb);
 	pb = printbuf_new();
 	char *data = malloc(*before_resize);
 	memset(data, 'X', *before_resize);
 	printbuf_memappend_fast(pb, data, *before_resize);
-	printf("Append to just before resize: %d, [%s]\n", printbuf_length(pb), pb->buf);
+	printf("Append to just before resize: %d, [%s]\n", printbuf_length(pb),
+	       pb->buf);
 
 	free(data);
 	printbuf_free(pb);
@@ -103,7 +105,8 @@ static void test_printbuf_memappend(int *before_resize)
 	data = malloc(*before_resize + 1);
 	memset(data, 'X', *before_resize + 1);
 	printbuf_memappend_fast(pb, data, *before_resize + 1);
-	printf("Append to just after resize: %d, [%s]\n", printbuf_length(pb), pb->buf);
+	printf("Append to just after resize: %d, [%s]\n", printbuf_length(pb),
+	       pb->buf);
 
 	free(data);
 
@@ -125,7 +128,9 @@ static void test_sprintbuf(int before_resize)
 	data[before_resize + 1] = '\0';
 	sprintbuf(pb, "%s", data);
 	free(data);
-	printf("sprintbuf to just after resize(%d+1): %d, [%s], strlen(buf)=%d\n", before_resize, printbuf_length(pb), pb->buf, (int)strlen(pb->buf));
+	printf
+	    ("sprintbuf to just after resize(%d+1): %d, [%s], strlen(buf)=%d\n",
+	     before_resize, printbuf_length(pb), pb->buf, (int)strlen(pb->buf));
 
 	printbuf_reset(pb);
 	sprintbuf(pb, "plain");

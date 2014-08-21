@@ -13,14 +13,15 @@
   __asm__(".section .gnu" #sym ",\n\t.ascii \"" msg "\"\n\t.text");
 
 #else
-#define __warn_references(sym,msg)    /* nothing */
+#define __warn_references(sym,msg)	/* nothing */
 #endif
 
-#endif 
+#endif
 
 #include "json_object.h"
 
-__warn_references(json_object_get, "Warning: please link against libjson-c instead of libjson");
+__warn_references(json_object_get,
+		  "Warning: please link against libjson-c instead of libjson");
 
 /*        __asm__(".section .gnu.warning." __STRING(sym)  \
             " ; .ascii \"" msg "\" ; .text") */

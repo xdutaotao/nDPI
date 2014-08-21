@@ -16,7 +16,7 @@
                             JSON_C_MICRO_VERSION)
 #define JSON_C_VERSION "0.12.99"
 
-const char *json_c_version(void); /* Returns JSON_C_VERSION */
-int json_c_version_num(void);     /* Returns JSON_C_VERSION_NUM */
+const char *json_c_version(void);	/* Returns JSON_C_VERSION */
+int json_c_version_num(void);	/* Returns JSON_C_VERSION_NUM */
 
 #endif

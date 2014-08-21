@@ -26,15 +26,15 @@ static void test_case_parse()
 	json_tokener_set_flags(tok, JSON_TOKENER_STRICT);
 
 	new_obj = json_tokener_parse_ex(tok, "True", 4);
-	assert (new_obj == NULL);
+	assert(new_obj == NULL);
 
 	new_obj = json_tokener_parse_ex(tok, "False", 5);
-	assert (new_obj == NULL);
+	assert(new_obj == NULL);
 
 	new_obj = json_tokener_parse_ex(tok, "Null", 4);
-	assert (new_obj == NULL);
+	assert(new_obj == NULL);
 
 	printf("OK\n");
-	
+
 	json_tokener_free(tok);
 }

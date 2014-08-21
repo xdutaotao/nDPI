@@ -22,7 +22,6 @@
 #define json_max(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,21 +29,21 @@ extern "C" {
 #define JSON_FILE_BUF_SIZE 4096
 
 /* utility functions */
-extern struct json_object* json_object_from_file(const char *filename);
-extern int json_object_to_file(const char *filename, struct json_object *obj);
-extern int json_object_to_file_ext(const char *filename, struct json_object *obj, int flags);
-extern int json_parse_int64(const char *buf, int64_t *retval);
-extern int json_parse_double(const char *buf, double *retval);
-
+	extern struct json_object *json_object_from_file(const char *filename);
+	extern int json_object_to_file(const char *filename,
+				       struct json_object *obj);
+	extern int json_object_to_file_ext(const char *filename,
+					   struct json_object *obj, int flags);
+	extern int json_parse_int64(const char *buf, int64_t * retval);
+	extern int json_parse_double(const char *buf, double *retval);
 
 /**
  * Return a string describing the type of the object.
  * e.g. "int", or "object", etc...
  */
-extern const char *json_type_to_name(enum json_type o_type);
+	extern const char *json_type_to_name(enum json_type o_type);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

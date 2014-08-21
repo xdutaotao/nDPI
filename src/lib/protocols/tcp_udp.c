@@ -18,141 +18,172 @@
  * 
  */
 
-
 #include "ndpi_api.h"
 
+u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct * ndpi_struct, u_int8_t protocol, u_int32_t saddr, u_int32_t daddr,	/* host endianess */
+				 u_int16_t sport, u_int16_t dport)
+{				/* host endianess */
+	if (protocol == IPPROTO_UDP) {
+		if ((sport == dport) && (sport == 17500)) {
+			return (NDPI_PROTOCOL_DROPBOX);
+		}
+	}
 
-u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struct, 
-				 u_int8_t protocol,
-				 u_int32_t saddr, u_int32_t daddr, /* host endianess */
-				 u_int16_t sport, u_int16_t dport) /* host endianess */
-{
-  if(protocol == IPPROTO_UDP) {
-    if((sport == dport) && (sport == 17500)) {
-      return(NDPI_PROTOCOL_DROPBOX);
-    }
-  }
-
-    /*
-      Citrix GotoMeeting (AS16815, AS21866)
-      216.115.208.0/20
-      216.219.112.0/20
-    */
-    /* printf("[SSL] %08X / %08X\n", saddr , daddr); */
+	/*
+	   Citrix GotoMeeting (AS16815, AS21866)
+	   216.115.208.0/20
+	   216.219.112.0/20
+	 */
+	/* printf("[SSL] %08X / %08X\n", saddr , daddr); */
 #ifdef NDPI_PROTOCOL_CITRIX_ONLINE
-    if(((saddr & 0xFFFFF000 /* 255.255.240.0 */) == 0xD873D000 /* 216.115.208.0 */)
-       || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) == 0xD873D000 /* 216.115.208.0 */)
+	if (((saddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+	     0xD873D000 /* 216.115.208.0 */ )
+	    || ((daddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0xD873D000 /* 216.115.208.0 */ )
 
-       || ((saddr & 0xFFFFF000 /* 255.255.240.0 */) == 0xD8DB7000 /* 216.219.112.0 */)
-       || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) == 0xD8DB7000 /* 216.219.112.0 */)
-       ) {
-      return(NDPI_PROTOCOL_CITRIX_ONLINE);
-    }
+	    || ((saddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0xD8DB7000 /* 216.219.112.0 */ )
+	    || ((daddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0xD8DB7000 /* 216.219.112.0 */ )
+	    ) {
+		return (NDPI_PROTOCOL_CITRIX_ONLINE);
+	}
 #endif
 
-    /*
-      Webex
-      66.114.160.0/20
-    */
+	/*
+	   Webex
+	   66.114.160.0/20
+	 */
 #ifdef NDPI_PROTOCOL_WEBEX
-    if(((saddr & 0xFFFFF000 /* 255.255.240.0 */) == 0x4272A000 /* 66.114.160.0 */)
-       || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) ==0x4272A000 /* 66.114.160.0 */)) {
-      return(NDPI_PROTOCOL_WEBEX);
-    }
+	if (((saddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+	     0x4272A000 /* 66.114.160.0 */ )
+	    || ((daddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0x4272A000 /* 66.114.160.0 */ )) {
+		return (NDPI_PROTOCOL_WEBEX);
+	}
 #endif
 
-    /*
-      Apple (FaceTime, iMessage,...)
-      17.0.0.0/8
-    */
+	/*
+	   Apple (FaceTime, iMessage,...)
+	   17.0.0.0/8
+	 */
 #ifdef NDPI_SERVICE_APPLE
-    if(((saddr & 0xFF000000 /* 255.0.0.0 */) == 0x11000000 /* 17.0.0.0 */)
-       || ((daddr & 0xFF000000 /* 255.0.0.0 */) == 0x11000000 /* 17.0.0.0 */)) {
-      return(NDPI_SERVICE_APPLE);
-    }
+	if (((saddr & 0xFF000000 /* 255.0.0.0 */ ) ==
+	     0x11000000 /* 17.0.0.0 */ )
+	    || ((daddr & 0xFF000000 /* 255.0.0.0 */ ) ==
+		0x11000000 /* 17.0.0.0 */ )) {
+		return (NDPI_SERVICE_APPLE);
+	}
 #endif
 
-    /*
-      Dropbox
-      108.160.160.0/20
-      199.47.216.0/22
-    */
+	/*
+	   Dropbox
+	   108.160.160.0/20
+	   199.47.216.0/22
+	 */
 #ifdef NDPI_PROTOCOL_DROPBOX
-    if(((saddr & 0xFFFFF000 /* 255.255.240.0 */) == 0x6CA0A000 /* 108.160.160.0 */) || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) == 0x6CA0A000 /* 108.160.160.0 */)
-       || ((saddr & 0xFFFFFC00 /* 255.255.240.0 */) == 0xC72FD800 /* 199.47.216.0 */) || ((daddr & 0xFFFFFC00 /* 255.255.240.0 */) == 0xC72FD800 /* 199.47.216.0 */)
-       ) {
-      return(NDPI_PROTOCOL_DROPBOX);
-    }
+	if (((saddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+	     0x6CA0A000 /* 108.160.160.0 */ )
+	    || ((daddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0x6CA0A000 /* 108.160.160.0 */ )
+	    || ((saddr & 0xFFFFFC00 /* 255.255.240.0 */ ) ==
+		0xC72FD800 /* 199.47.216.0 */ )
+	    || ((daddr & 0xFFFFFC00 /* 255.255.240.0 */ ) ==
+		0xC72FD800 /* 199.47.216.0 */ )
+	    ) {
+		return (NDPI_PROTOCOL_DROPBOX);
+	}
 
-    if(((saddr & 0xFFFFF000 /* 255.255.240.0.0 */) == 0x6CA0A000 /* 108.160.160.0 */)
-       || ((daddr & 0xFFFFF000 /* 255.255.240.0 */) == 0x6CA0A000 /* 108.160.160.0 */)) {
-      return(NDPI_PROTOCOL_DROPBOX);
-    }
+	if (((saddr & 0xFFFFF000 /* 255.255.240.0.0 */ ) ==
+	     0x6CA0A000 /* 108.160.160.0 */ )
+	    || ((daddr & 0xFFFFF000 /* 255.255.240.0 */ ) ==
+		0x6CA0A000 /* 108.160.160.0 */ )) {
+		return (NDPI_PROTOCOL_DROPBOX);
+	}
 #endif
 
-    /* 
-       Skype
-       157.56.0.0/14, 157.60.0.0/16, 157.54.0.0/15
-    */
+	/* 
+	   Skype
+	   157.56.0.0/14, 157.60.0.0/16, 157.54.0.0/15
+	 */
 #ifdef NDPI_PROTOCOL_SKYPE
-    if(
-       (((saddr & 0xFF3F0000 /* 255.63.0.0 */) == 0x9D380000 /* 157.56.0.0/ */) || ((daddr & 0xFF3F0000 /* 255.63.0.0 */) == 0x9D380000))
-       || (((saddr & 0xFFFF0000 /* 255.255.0.0 */) == 0x9D3C0000 /* 157.60.0.0/ */) || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) == 0x9D3D0000))
-       || (((saddr & 0xFF7F0000 /* 255.255.0.0 */) == 0x9D360000 /* 157.54.0.0/ */) || ((daddr & 0xFF7F0000 /* 255.127.0.0 */) == 0x9D360000))
-       || (((saddr & 0xFFFE0000 /* 255.254.0.0 */) == 0x9D360000 /* 157.54.0.0/ */) || ((daddr & 0xFFFE0000 /* 255.254.0.0 */) == 0x9D360000))
-       ) {
-      return(NDPI_PROTOCOL_SKYPE);
-    }
+	if ((((saddr & 0xFF3F0000 /* 255.63.0.0 */ ) ==
+	      0x9D380000 /* 157.56.0.0/ */ )
+	     || ((daddr & 0xFF3F0000 /* 255.63.0.0 */ ) == 0x9D380000))
+	    || (((saddr & 0xFFFF0000 /* 255.255.0.0 */ ) ==
+		 0x9D3C0000 /* 157.60.0.0/ */ )
+		|| ((daddr & 0xFFFF0000 /* 255.255.0.0 */ ) == 0x9D3D0000))
+	    || (((saddr & 0xFF7F0000 /* 255.255.0.0 */ ) ==
+		 0x9D360000 /* 157.54.0.0/ */ )
+		|| ((daddr & 0xFF7F0000 /* 255.127.0.0 */ ) == 0x9D360000))
+	    || (((saddr & 0xFFFE0000 /* 255.254.0.0 */ ) ==
+		 0x9D360000 /* 157.54.0.0/ */ )
+		|| ((daddr & 0xFFFE0000 /* 255.254.0.0 */ ) == 0x9D360000))
+	    ) {
+		return (NDPI_PROTOCOL_SKYPE);
+	}
 #endif
-    /*
-      Google
-      173.194.0.0/16
-    */
+	/*
+	   Google
+	   173.194.0.0/16
+	 */
 #ifdef NDPI_SERVICE_GOOGLE
-    if(((saddr & 0xFFFF0000 /* 255.255.0.0 */) == 0xADC20000  /* 173.194.0.0 */)
-       || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) ==0xADC20000 /* 173.194.0.0 */)) {      
-      return(NDPI_SERVICE_GOOGLE);
-    }
+	if (((saddr & 0xFFFF0000 /* 255.255.0.0 */ ) ==
+	     0xADC20000 /* 173.194.0.0 */ )
+	    || ((daddr & 0xFFFF0000 /* 255.255.0.0 */ ) ==
+		0xADC20000 /* 173.194.0.0 */ )) {
+		return (NDPI_SERVICE_GOOGLE);
+	}
 #endif
 
-    /*
-      Ubuntu One
-      91.189.89.0/21 (255.255.248.0)
-    */
+	/*
+	   Ubuntu One
+	   91.189.89.0/21 (255.255.248.0)
+	 */
 #ifdef NDPI_PROTOCOL_UBUNTUONE
-    if(((saddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0 */)
-       || ((daddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0 */)) {
-      return(NDPI_PROTOCOL_UBUNTUONE);
-    }    
+	if (((saddr & 0xFFFFF800 /* 255.255.248.0 */ ) ==
+	     0x5BBD5900 /* 91.189.89.0 */ )
+	    || ((daddr & 0xFFFFF800 /* 255.255.248.0 */ ) ==
+		0x5BBD5900 /* 91.189.89.0 */ )) {
+		return (NDPI_PROTOCOL_UBUNTUONE);
+	}
 #endif
-  return(NDPI_PROTOCOL_UNKNOWN);
+	return (NDPI_PROTOCOL_UNKNOWN);
 }
 
-void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
+void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct,
+			    struct ndpi_flow_struct *flow)
 {
-  u_int16_t sport, dport;
-  u_int proto;
-  struct ndpi_packet_struct *packet = &flow->packet;
+	u_int16_t sport, dport;
+	u_int proto;
+	struct ndpi_packet_struct *packet = &flow->packet;
 
-  if(packet->udp) sport = ntohs(packet->udp->source), dport = ntohs(packet->udp->dest);
-  else if(packet->tcp) sport = ntohs(packet->tcp->source), dport = ntohs(packet->tcp->dest);
-  else sport = dport = 0;
-  
-  if(packet->iph /* IPv4 Only: we need to support packet->iphv6 at some point */) {
-    proto = ndpi_search_tcp_or_udp_raw(ndpi_struct,
+	if (packet->udp)
+		sport = ntohs(packet->udp->source), dport =
+		    ntohs(packet->udp->dest);
+	else if (packet->tcp)
+		sport = ntohs(packet->tcp->source), dport =
+		    ntohs(packet->tcp->dest);
+	else
+		sport = dport = 0;
+
+	if (packet->iph		/* IPv4 Only: we need to support packet->iphv6 at some point */
+	    ) {
+		proto = ndpi_search_tcp_or_udp_raw(ndpi_struct,
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-				       flow->packet.iph ? flow->packet.iph->protocol : flow->packet.iphv6->nexthdr,
+						   flow->packet.
+						   iph ? flow->packet.iph->
+						   protocol : flow->packet.
+						   iphv6->nexthdr,
 #else
-                       flow->packet.iph->protocol,
+						   flow->packet.iph->protocol,
 #endif
-				       ntohl(packet->iph->saddr), 
-				       ntohl(packet->iph->daddr),
-				       sport, dport);
-    
-    if(proto != NDPI_PROTOCOL_UNKNOWN)
-      ndpi_int_add_connection(ndpi_struct, flow, proto, NDPI_REAL_PROTOCOL);
-  }
+						   ntohl(packet->iph->saddr),
+						   ntohl(packet->iph->daddr),
+						   sport, dport);
+
+		if (proto != NDPI_PROTOCOL_UNKNOWN)
+			ndpi_int_add_connection(ndpi_struct, flow, proto,
+						NDPI_REAL_PROTOCOL);
+	}
 }
-
-
-

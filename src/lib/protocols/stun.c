@@ -22,25 +22,26 @@
  * 
  */
 
-
 #include "ndpi_protocols.h"
 #ifdef NDPI_PROTOCOL_STUN
 
-
-static void ndpi_int_stun_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
+static void ndpi_int_stun_add_connection(struct ndpi_detection_module_struct
+					 *ndpi_struct,
+					 struct ndpi_flow_struct *flow)
 {
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_STUN, NDPI_REAL_PROTOCOL);
+	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_STUN,
+				NDPI_REAL_PROTOCOL);
 }
-
-
 
 typedef enum {
 	NDPI_IS_STUN,
 	NDPI_IS_NOT_STUN
 } ndpi_int_stun_t;
 
-static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *ndpi_struct,
-													  const u_int8_t * payload, const u_int16_t payload_length)
+static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct
+					   *ndpi_struct,
+					   const u_int8_t * payload,
+					   const u_int16_t payload_length)
 {
 	u_int16_t a;
 
@@ -60,17 +61,22 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 	 * 0x8003, 0x8004 used by facetime
 	 */
 
-	if (payload_length >= 20 && ntohs(get_u_int16_t(payload, 2)) + 20 == payload_length &&
-		((payload[0] == 0x00 && (payload[1] >= 0x01 && payload[1] <= 0x04)) ||
-		 (payload[0] == 0x01 &&
-		  ((payload[1] >= 0x01 && payload[1] <= 0x04) || (payload[1] >= 0x11 && payload[1] <= 0x15))))) {
+	if (payload_length >= 20
+	    && ntohs(get_u_int16_t(payload, 2)) + 20 == payload_length
+	    &&
+	    ((payload[0] == 0x00 && (payload[1] >= 0x01 && payload[1] <= 0x04))
+	     || (payload[0] == 0x01
+		 && ((payload[1] >= 0x01 && payload[1] <= 0x04)
+		     || (payload[1] >= 0x11 && payload[1] <= 0x15))))) {
 		u_int8_t mod;
 		u_int8_t old = 1;
 		u_int8_t padding = 0;
-		NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "len and type match.\n");
+		NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG,
+			 "len and type match.\n");
 
 		if (payload_length == 20) {
-			NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "found stun.\n");
+			NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct,
+				 NDPI_LOG_DEBUG, "found stun.\n");
 			return NDPI_IS_STUN;
 		}
 
@@ -79,57 +85,94 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 		while (a < payload_length) {
 
 			if (old && payload_length >= a + 4
-				&&
-				((payload[a] == 0x00
-				  && ((payload[a + 1] >= 0x01 && payload[a + 1] <= 0x16) || payload[a + 1] == 0x19
-					  || payload[a + 1] == 0x20 || payload[a + 1] == 0x22 || payload[a + 1] == 0x24
-					  || payload[a + 1] == 0x25))
-				 || (payload[a] == 0x80
-					 && (payload[a + 1] == 0x01 || payload[a + 1] == 0x03 || payload[a + 1] == 0x04
-						 || payload[a + 1] == 0x06 || payload[a + 1] == 0x08 || payload[a + 1] == 0x15
-						 || payload[a + 1] == 0x20 || payload[a + 1] == 0x22 || payload[a + 1] == 0x28
-						 || payload[a + 1] == 0x2a || payload[a + 1] == 0x29 || payload[a + 1] == 0x50
-						 || payload[a + 1] == 0x54 || payload[a + 1] == 0x55)))) {
+			    &&
+			    ((payload[a] == 0x00
+			      &&
+			      ((payload[a + 1] >= 0x01
+				&& payload[a + 1] <= 0x16)
+			       || payload[a + 1] == 0x19
+			       || payload[a + 1] == 0x20
+			       || payload[a + 1] == 0x22
+			       || payload[a + 1] == 0x24
+			       || payload[a + 1] == 0x25))
+			     || (payload[a] == 0x80
+				 && (payload[a + 1] == 0x01
+				     || payload[a + 1] == 0x03
+				     || payload[a + 1] == 0x04
+				     || payload[a + 1] == 0x06
+				     || payload[a + 1] == 0x08
+				     || payload[a + 1] == 0x15
+				     || payload[a + 1] == 0x20
+				     || payload[a + 1] == 0x22
+				     || payload[a + 1] == 0x28
+				     || payload[a + 1] == 0x2a
+				     || payload[a + 1] == 0x29
+				     || payload[a + 1] == 0x50
+				     || payload[a + 1] == 0x54
+				     || payload[a + 1] == 0x55)))) {
 
-				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "attribute match.\n");
+				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct,
+					 NDPI_LOG_DEBUG, "attribute match.\n");
 
-				a += ((payload[a + 2] << 8) + payload[a + 3] + 4);
+				a += ((payload[a + 2] << 8) + payload[a + 3] +
+				      4);
 				mod = a % 4;
 				if (mod) {
 					padding = 4 - mod;
 				}
-				if (a == payload_length || (padding && (a + padding) == payload_length)) {
-					NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "found stun.\n");
+				if (a == payload_length
+				    || (padding
+					&& (a + padding) == payload_length)) {
+					NDPI_LOG(NDPI_PROTOCOL_STUN,
+						 ndpi_struct, NDPI_LOG_DEBUG,
+						 "found stun.\n");
 					return NDPI_IS_STUN;
 				}
 
 			} else if (payload_length >= a + padding + 4
-					   &&
-					   ((payload[a + padding] == 0x00
-						 && ((payload[a + 1 + padding] >= 0x01 && payload[a + 1 + padding] <= 0x16)
-							 || payload[a + 1 + padding] == 0x19 || payload[a + 1 + padding] == 0x20
-							 || payload[a + 1 + padding] == 0x22 || payload[a + 1 + padding] == 0x24
-							 || payload[a + 1 + padding] == 0x25))
-						|| (payload[a + padding] == 0x80
-							&& (payload[a + 1 + padding] == 0x01 || payload[a + 1 + padding] == 0x03
-								|| payload[a + 1 + padding] == 0x04 || payload[a + 1 + padding] == 0x06
-								|| payload[a + 1 + padding] == 0x08 || payload[a + 1 + padding] == 0x15
-								|| payload[a + 1 + padding] == 0x20 || payload[a + 1 + padding] == 0x22
-								|| payload[a + 1 + padding] == 0x28 || payload[a + 1 + padding] == 0x2a
-								|| payload[a + 1 + padding] == 0x29 || payload[a + 1 + padding] == 0x50
-								|| payload[a + 1 + padding] == 0x54 || payload[a + 1 + padding] == 0x55)))) {
+				   &&
+				   ((payload[a + padding] == 0x00
+				     &&
+				     ((payload[a + 1 + padding] >= 0x01
+				       && payload[a + 1 + padding] <= 0x16)
+				      || payload[a + 1 + padding] == 0x19
+				      || payload[a + 1 + padding] == 0x20
+				      || payload[a + 1 + padding] == 0x22
+				      || payload[a + 1 + padding] == 0x24
+				      || payload[a + 1 + padding] == 0x25))
+				    || (payload[a + padding] == 0x80
+					&& (payload[a + 1 + padding] == 0x01
+					    || payload[a + 1 + padding] == 0x03
+					    || payload[a + 1 + padding] == 0x04
+					    || payload[a + 1 + padding] == 0x06
+					    || payload[a + 1 + padding] == 0x08
+					    || payload[a + 1 + padding] == 0x15
+					    || payload[a + 1 + padding] == 0x20
+					    || payload[a + 1 + padding] == 0x22
+					    || payload[a + 1 + padding] == 0x28
+					    || payload[a + 1 + padding] == 0x2a
+					    || payload[a + 1 + padding] == 0x29
+					    || payload[a + 1 + padding] == 0x50
+					    || payload[a + 1 + padding] == 0x54
+					    || payload[a + 1 + padding] ==
+					    0x55)))) {
 
-				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "New STUN - attribute match.\n");
+				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct,
+					 NDPI_LOG_DEBUG,
+					 "New STUN - attribute match.\n");
 
 				old = 0;
-				a += ((payload[a + 2 + padding] << 8) + payload[a + 3 + padding] + 4);
+				a += ((payload[a + 2 + padding] << 8) +
+				      payload[a + 3 + padding] + 4);
 				padding = 0;
 				mod = a % 4;
 				if (mod) {
 					a += 4 - mod;
 				}
 				if (a == payload_length) {
-					NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "found stun.\n");
+					NDPI_LOG(NDPI_PROTOCOL_STUN,
+						 ndpi_struct, NDPI_LOG_DEBUG,
+						 "found stun.\n");
 					return NDPI_IS_STUN;
 				}
 			} else {
@@ -141,40 +184,48 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 	return NDPI_IS_NOT_STUN;
 }
 
-void ndpi_search_stun(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
+void ndpi_search_stun(struct ndpi_detection_module_struct *ndpi_struct,
+		      struct ndpi_flow_struct *flow)
 {
 	struct ndpi_packet_struct *packet = &flow->packet;
-	
 
-	NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "search stun.\n");
-
+	NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG,
+		 "search stun.\n");
 
 	if (packet->tcp) {
 
 		/* STUN may be encapsulated in TCP packets */
 
 		if (packet->payload_packet_len >= 2 + 20 &&
-			ntohs(get_u_int16_t(packet->payload, 0)) + 2 == packet->payload_packet_len) {
+		    ntohs(get_u_int16_t(packet->payload, 0)) + 2 ==
+		    packet->payload_packet_len) {
 
 			/* TODO there could be several STUN packets in a single TCP packet so maybe the detection could be
 			 * improved by checking only the STUN packet of given length */
 
-			if (ndpi_int_check_stun(ndpi_struct, packet->payload + 2, packet->payload_packet_len - 2) ==
-				NDPI_IS_STUN) {
-				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "found TCP stun.\n");
+			if (ndpi_int_check_stun
+			    (ndpi_struct, packet->payload + 2,
+			     packet->payload_packet_len - 2) == NDPI_IS_STUN) {
+				NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct,
+					 NDPI_LOG_DEBUG, "found TCP stun.\n");
 				ndpi_int_stun_add_connection(ndpi_struct, flow);
 				return;
 			}
 		}
 	}
-	if (ndpi_int_check_stun(ndpi_struct, packet->payload, packet->payload_packet_len) == NDPI_IS_STUN) {
-		NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "found UDP stun.\n");
+	if (ndpi_int_check_stun
+	    (ndpi_struct, packet->payload,
+	     packet->payload_packet_len) == NDPI_IS_STUN) {
+		NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG,
+			 "found UDP stun.\n");
 		ndpi_int_stun_add_connection(ndpi_struct, flow);
 		return;
 	}
 
-	NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG, "exclude stun.\n");
-	NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_STUN);
+	NDPI_LOG(NDPI_PROTOCOL_STUN, ndpi_struct, NDPI_LOG_DEBUG,
+		 "exclude stun.\n");
+	NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask,
+				     NDPI_PROTOCOL_STUN);
 }
 
 #endif

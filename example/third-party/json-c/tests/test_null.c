@@ -18,10 +18,9 @@ int main()
 	struct json_object *string = json_object_new_string_len(input, 3);
 	const char *json = json_object_to_json_string(string);
 
-	int strings_match =  !strcmp( expected, json);
+	int strings_match = !strcmp(expected, json);
 	int retval = 0;
-	if (strings_match)
-	{
+	if (strings_match) {
 		printf("JSON write result is correct: %s\n", json);
 		printf("PASS\n");
 	} else {
@@ -31,26 +30,22 @@ int main()
 		printf("parsed string:   ");
 		printf("%s\n", json);
 		printf("FAIL\n");
-		retval=1;
+		retval = 1;
 	}
 	json_object_put(string);
 
 	struct json_object *parsed_str = json_tokener_parse(expected);
-	if (parsed_str)
-	{
+	if (parsed_str) {
 		int parsed_len = json_object_get_string_len(parsed_str);
 		const char *parsed_cstr = json_object_get_string(parsed_str);
 		int ii;
 		printf("Re-parsed object string len=%d, chars=[", parsed_len);
-		for (ii = 0; ii < parsed_len ; ii++)
-		{
+		for (ii = 0; ii < parsed_len; ii++) {
 			printf("%s%d", (ii ? ", " : ""), (int)parsed_cstr[ii]);
 		}
 		printf("]\n");
 		json_object_put(parsed_str);
-	}
-	else
-	{
+	} else {
 		printf("ERROR: failed to parse\n");
 	}
 	return retval;

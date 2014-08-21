@@ -86,7 +86,6 @@
 #define NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP (NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6 | NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP)
 #define NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP (NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6 | NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP)
 
-
 #define NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITH_PAYLOAD		(NDPI_SELECTION_BITMASK_PROTOCOL_TCP | NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD)
 #define NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITH_PAYLOAD		(NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP | NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD)
 #define NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD		(NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP | NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD)
@@ -136,7 +135,6 @@
 /* misc definitions */
 #define NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE 0x10000
 
-
 /* TODO: rebuild all memory areas to have a more aligned memory block here */
 
 /* DEFINITION OF MAX LINE NUMBERS FOR line parse algorithm */
@@ -177,7 +175,7 @@
     }								\
   }
 
-#else							/* NDPI_ENABLE_DEBUG_MESSAGES */
+#else /* NDPI_ENABLE_DEBUG_MESSAGES */
 
 #if defined(WIN32)
 #define NDPI_LOG(...) {}
@@ -185,7 +183,7 @@
 #define NDPI_LOG(proto, mod, log_level, args...) {}
 #endif
 
-#endif							/* NDPI_ENABLE_DEBUG_MESSAGES */
+#endif /* NDPI_ENABLE_DEBUG_MESSAGES */
 
 /**
  * macro for getting the string len of a static string
@@ -200,9 +198,8 @@
 
 #define NDPI_NUM_BITS              256
 
-#define NDPI_BITS /* 32 */ (sizeof(ndpi_ndpi_mask) * 8 /* number of bits in a byte */)        /* bits per mask */
+#define NDPI_BITS /* 32 */ (sizeof(ndpi_ndpi_mask) * 8 /* number of bits in a byte */)	/* bits per mask */
 #define howmanybits(x, y)   (((x)+((y)-1))/(y))
-
 
 #define NDPI_SET(p, n)    ((p)->fds_bits[(n)/NDPI_BITS] |= (1 << (((u_int32_t)n) % NDPI_BITS)))
 #define NDPI_CLR(p, n)    ((p)->fds_bits[(n)/NDPI_BITS] &= ~(1 << (((u_int32_t)n) % NDPI_BITS)))
@@ -213,7 +210,7 @@
 #define NDPI_NUM_FDS_BITS     howmanybits(NDPI_NUM_BITS, NDPI_BITS)
 
 #define NDPI_PROTOCOL_BITMASK ndpi_protocol_bitmask_struct_t
-  
+
 #define NDPI_BITMASK_ADD(a,b)     NDPI_SET(&a,b)
 #define NDPI_BITMASK_DEL(a,b)     NDPI_CLR(&a,b)
 #define NDPI_BITMASK_RESET(a)     NDPI_ZERO(&a)
@@ -228,7 +225,6 @@
 #define NDPI_COMPARE_PROTOCOL_TO_BITMASK(bmask,value) NDPI_ISSET(&bmask,value)
 
 #define NDPI_SAVE_AS_BITMASK(bmask,value)  { NDPI_ZERO(&bmask) ; NDPI_ADD_PROTOCOL_TO_BITMASK(bmask, value); }
-
 
 #define ndpi_min(a,b)   ((a < b) ? a : b)
 #define ndpi_max(a,b)   ((a > b) ? a : b)
@@ -258,25 +254,24 @@
 /* new definitions to get little endian from network bytes */
 #define get_ul8(X,O) get_u_int8_t(X,O)
 
-
 #if defined(__LITTLE_ENDIAN__)
 #define get_l16(X,O)  get_u_int16_t(X,O)
 #define get_l32(X,O)  get_u_int32_t(X,O)
 #elif defined(__BIG_ENDIAN__)
 /* convert the bytes from big to little endian */
 #ifndef __KERNEL__
-# define get_l16(X,O) bswap_16(get_u_int16_t(X,O))
-# define get_l32(X,O) bswap_32(get_u_int32_t(X,O))
+#define get_l16(X,O) bswap_16(get_u_int16_t(X,O))
+#define get_l32(X,O) bswap_32(get_u_int32_t(X,O))
 #else
-# define get_l16(X,O) __cpu_to_le16(get_u_int16_t(X,O))
-# define get_l32(X,O) __cpu_to_le32(get_u_int32_t(X,O))
+#define get_l16(X,O) __cpu_to_le16(get_u_int16_t(X,O))
+#define get_l32(X,O) __cpu_to_le32(get_u_int32_t(X,O))
 #endif
 
 #else
 
 #error "__BYTE_ORDER MUST BE DEFINED !"
 
-#endif							/* __BYTE_ORDER */
+#endif /* __BYTE_ORDER */
 
 /* define memory callback function */
 #define match_first_bytes(payload,st) (memcmp((payload),(st),(sizeof(st)-1))==0)

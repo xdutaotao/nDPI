@@ -43,8 +43,8 @@ typedef char AC_ALPHABET_t;
  * union for this purpose. you can add your desired type in it.
  **/
 typedef union {
-  char * stringy; /* null-terminated string */
-  unsigned long number;
+	char *stringy;		/* null-terminated string */
+	unsigned long number;
 } AC_REP_t;
 
 /* AC_PATTERN_t:
@@ -59,11 +59,10 @@ typedef union {
  * it is the responsibility of your program to maintain a permanent allocation
  * for astring field of the added pattern to automata.
  **/
-typedef struct
-{
-  AC_ALPHABET_t * astring; /* String of alphabets */
-  unsigned int length; /* Length of pattern */
-  AC_REP_t rep; /* Representative string (optional) */
+typedef struct {
+	AC_ALPHABET_t *astring;	/* String of alphabets */
+	unsigned int length;	/* Length of pattern */
+	AC_REP_t rep;		/* Representative string (optional) */
 } AC_PATTERN_t;
 
 /* AC_TEXT_t:
@@ -71,10 +70,9 @@ typedef struct
  * it is similar to AC_PATTERN_t. actually we could use AC_PATTERN_t as input
  * text, but for the purpose of being more readable, we defined this new type.
  **/
-typedef struct
-{
-  AC_ALPHABET_t * astring; /* String of alphabets */
-  unsigned int length; /* Length of string */
+typedef struct {
+	AC_ALPHABET_t *astring;	/* String of alphabets */
+	unsigned int length;	/* Length of string */
 } AC_TEXT_t;
 
 /* AC_MATCH_t:
@@ -91,26 +89,24 @@ typedef struct
  * respectively. finally the field 'match_num' maintains the number of
  * matched patterns.
  **/
-typedef struct
-{
-  AC_PATTERN_t * patterns; /* Array of matched pattern */
-  long position; /* The end position of matching pattern(s) in the text */
-  unsigned int match_num; /* Number of matched patterns */
+typedef struct {
+	AC_PATTERN_t *patterns;	/* Array of matched pattern */
+	long position;		/* The end position of matching pattern(s) in the text */
+	unsigned int match_num;	/* Number of matched patterns */
 } AC_MATCH_t;
 
 /* AC_ERROR_t:
  * Error that may occur while adding a pattern to the automata.
  * it is returned by ac_automata_add().
  **/
-typedef enum
-  {
-    ACERR_SUCCESS = 0, /* No error occurred */
-    ACERR_DUPLICATE_PATTERN, /* Duplicate patterns */
-    ACERR_LONG_PATTERN, /* Pattern length is longer than AC_PATTRN_MAX_LENGTH */
-    ACERR_ZERO_PATTERN, /* Empty pattern (zero length) */
-    ACERR_AUTOMATA_CLOSED, /* Automata is closed. after calling
-			      ac_automata_finalize() you can not add new patterns to the automata. */
-  } AC_ERROR_t;
+typedef enum {
+	ACERR_SUCCESS = 0,	/* No error occurred */
+	ACERR_DUPLICATE_PATTERN,	/* Duplicate patterns */
+	ACERR_LONG_PATTERN,	/* Pattern length is longer than AC_PATTRN_MAX_LENGTH */
+	ACERR_ZERO_PATTERN,	/* Empty pattern (zero length) */
+	ACERR_AUTOMATA_CLOSED,	/* Automata is closed. after calling
+				   ac_automata_finalize() you can not add new patterns to the automata. */
+} AC_ERROR_t;
 
 /* MATCH_CALBACK_t:
  * This is the call-back function type that must be given to automata at
@@ -125,7 +121,7 @@ typedef enum
  * continue searching, otherwise it will return from ac_automata_search()
  * to your calling function.
  **/
-typedef int (*MATCH_CALBACK_f)(AC_MATCH_t *, void *);
+typedef int (*MATCH_CALBACK_f) (AC_MATCH_t *, void *);
 
 /* AC_PATTRN_MAX_LENGTH:
  * Maximum acceptable pattern length in AC_PATTERN_t.length

@@ -27,7 +27,7 @@
 #include "ndpi_main.h"
 
 struct xt_ndpi_mtinfo {
-        NDPI_PROTOCOL_BITMASK flags;
+	NDPI_PROTOCOL_BITMASK flags;
 };
 
 #endif /* _LINUX_NETFILTER_XT_NDPI_H */

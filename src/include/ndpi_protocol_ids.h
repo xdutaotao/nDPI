@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef __NDPI_API_INCLUDE_FILE__
 
 #endif
@@ -46,23 +45,22 @@
 /*#define NDPI_PROTOCOL_IP_IP_IN_IP				86*/
 /*#define NDPI_PROTOCOL_IP_ICMPV6					102*/
 
-
 #define NDPI_PROTOCOL_HTTP					7
 #define NDPI_PROTOCOL_HTTP_APPLICATION_VEOHTV 		        60
-#define NDPI_PROTOCOL_SSL_NO_CERT			        64 /* SSL without certificate (Skype, Ultrasurf?) - ntop.org */
+#define NDPI_PROTOCOL_SSL_NO_CERT			        64	/* SSL without certificate (Skype, Ultrasurf?) - ntop.org */
 #define NDPI_PROTOCOL_SSL					91
 #define NDPI_PROTOCOL_HTTP_APPLICATION_ACTIVESYNC		110
 #define NDPI_PROTOCOL_HTTP_CONNECT				130
 #define NDPI_PROTOCOL_HTTP_PROXY				131
-//#define NDPI_PROTOCOL_SOCKS5					172 /* Tomasz Bujlow <tomasz@skatnet.dk> */
-//#define NDPI_PROTOCOL_SOCKS4					173 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+//#define NDPI_PROTOCOL_SOCKS5                                  172 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+//#define NDPI_PROTOCOL_SOCKS4                                  173 /* Tomasz Bujlow <tomasz@skatnet.dk> */
 
-#define NDPI_PROTOCOL_FTP_CONTROL				1 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_PROTOCOL_FTP_CONTROL				1	/* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_PROTOCOL_MAIL_POP				        2
 #define NDPI_PROTOCOL_MAIL_SMTP				        3
 #define NDPI_PROTOCOL_MAIL_IMAP			  	        4
 #define NDPI_PROTOCOL_DNS              			        5
-//#define NDPI_PROTOCOL_IPP					6
+//#define NDPI_PROTOCOL_IPP                                     6
 /*#define NDPI_PROTOCOL_MDNS					8*/
 /*#define NDPI_PROTOCOL_NTP					9*/
 /*#define NDPI_PROTOCOL_NETBIOS					10*/
@@ -91,7 +89,7 @@
 #define NDPI_PROTOCOL_OPENFT					33
 #define NDPI_PROTOCOL_FASTTRACK				        34
 #define NDPI_PROTOCOL_GNUTELLA				        35
-#define NDPI_PROTOCOL_EDONKEY					36 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_PROTOCOL_EDONKEY					36	/* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_PROTOCOL_BITTORRENT				37
 /*#define NDPI_PROTOCOL_EPP					38*/
 /*#define	NDPI_PROTOCOL_XBOX					47*/
@@ -100,7 +98,7 @@
 /*#define	NDPI_PROTOCOL_RTSP					50*/
 #define NDPI_PROTOCOL_MAIL_IMAPS				51
 #define NDPI_PROTOCOL_ICECAST					52
-#define NDPI_PROTOCOL_PPLIVE					53 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_PROTOCOL_PPLIVE					53	/* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_PROTOCOL_PPSTREAM				        54
 /*#define NDPI_PROTOCOL_ZATTOO					55*/
 /*#define NDPI_PROTOCOL_SHOUTCAST				        56*/
@@ -118,7 +116,7 @@
 #define NDPI_PROTOCOL_YAHOO					70
 #define NDPI_PROTOCOL_BATTLEFIELD				71
 #define NDPI_PROTOCOL_QUAKE					72
-#define NDPI_PROTOCOL_STEAM					74 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_PROTOCOL_STEAM					74	/* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_PROTOCOL_HALFLIFE2				        75
 #define NDPI_PROTOCOL_WORLDOFWARCRAFT				76
 #define NDPI_PROTOCOL_TELNET					77
@@ -165,8 +163,8 @@
 #define NDPI_PROTOCOL_WEBEX					141
 #define NDPI_PROTOCOL_VIBER					144
 /*#define NDPI_PROTOCOL_RADIUS					146*/
-/*#define NDPI_PROTOCOL_WINDOWS_UPDATE				147 *//* Thierry Laurion */
-#define NDPI_PROTOCOL_TEAMVIEWER				148 /* xplico.org */
+								      /*#define NDPI_PROTOCOL_WINDOWS_UPDATE				147 *//* Thierry Laurion */
+#define NDPI_PROTOCOL_TEAMVIEWER				148	/* xplico.org */
 /*#define NDPI_PROTOCOL_LOTUS_NOTES				150*/
 /*#define NDPI_PROTOCOL_SAP					151*/
 /*#define NDPI_PROTOCOL_GTP					152*/
@@ -174,28 +172,26 @@
 /*#define NDPI_PROTOCOL_LLMNR					154*/
 /*#define NDPI_PROTOCOL_REMOTE_SCAN				155*/
 /*#define NDPI_PROTOCOL_SPOTIFY					156*/
-/*#define NDPI_PROTOCOL_H323					158 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_OPENVPN					159 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_NOE					160 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_CISCOVPN				        161 *//* Remy Mudingay <mudingay@ill.fr> */
-#define NDPI_PROTOCOL_TEAMSPEAK				        162 /* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_TOR					163 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_SKINNY					164 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_RTCP					165 *//* Remy Mudingay <mudingay@ill.fr> */
-#define NDPI_PROTOCOL_RSYNC					166 /* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_ORACLE					167 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_CORBA					168 *//* Remy Mudingay <mudingay@ill.fr> */
-/*#define NDPI_PROTOCOL_UBUNTUONE			  	        169 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_H323					158 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_OPENVPN					159 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_NOE					160 *//* Remy Mudingay <mudingay@ill.fr> */
+									      /*#define NDPI_PROTOCOL_CISCOVPN				        161 *//* Remy Mudingay <mudingay@ill.fr> */
+#define NDPI_PROTOCOL_TEAMSPEAK				        162	/* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_TOR					163 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_SKINNY					164 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_RTCP					165 *//* Remy Mudingay <mudingay@ill.fr> */
+#define NDPI_PROTOCOL_RSYNC					166	/* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_ORACLE					167 *//* Remy Mudingay <mudingay@ill.fr> */
+								      /*#define NDPI_PROTOCOL_CORBA					168 *//* Remy Mudingay <mudingay@ill.fr> */
+									      /*#define NDPI_PROTOCOL_UBUNTUONE			  	        169 *//* Remy Mudingay <mudingay@ill.fr> */
 /*#define NDPI_PROTOCOL_WHOIS_DAS				        170*/
 /*#define NDPI_PROTOCOL_COLLECTD				        171*/
-/*#define NDPI_PROTOCOL_RTMP					174 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-#define NDPI_PROTOCOL_FTP_DATA				        175 /* Tomasz Bujlow <tomasz@skatnet.dk> */
+								      /*#define NDPI_PROTOCOL_RTMP					174 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_PROTOCOL_FTP_DATA				        175	/* Tomasz Bujlow <tomasz@skatnet.dk> */
 /*#define NDPI_PROTOCOL_ZMQ                                       177*/
-/*#define NDPI_PROTOCOL_MEGACO    				181 *//* Gianluca Costa <g.costa@xplico.org> */
+								      /*#define NDPI_PROTOCOL_MEGACO    				181 *//* Gianluca Costa <g.costa@xplico.org> */
 /*#define NDPI_PROTOCOL_REDIS                                     182*/
-/*#define NDPI_PROTOCOL_PANDO					183 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-
-
+								      /*#define NDPI_PROTOCOL_PANDO					183 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
 
 #define NDPI_CONTENT_AVI				39
 #define NDPI_CONTENT_FLASH				40
@@ -221,15 +217,15 @@
 #define NDPI_SERVICE_APPLE_ICLOUD			143
 #define NDPI_SERVICE_APPLE_ITUNES			145
 /*#define NDPI_SERVICE_TUENTI				149*/
-/*#define NDPI_SERVICE_WIKIPEDIA				176 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_MSN				NDPI_PROTOCOL_MSN *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_AMAZON				178 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_EBAY				179 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_CNN				180 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-#define NDPI_SERVICE_DROPBOX				NDPI_PROTOCOL_DROPBOX /* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_SKYPE				NDPI_PROTOCOL_SKYPE *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_VIBER				NDPI_PROTOCOL_VIBER *//* Tomasz Bujlow <tomasz@skatnet.dk> */
-/*#define NDPI_SERVICE_YAHOO				NDPI_PROTOCOL_YAHOO *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+								      /*#define NDPI_SERVICE_WIKIPEDIA				176 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+									    /*#define NDPI_SERVICE_MSN				NDPI_PROTOCOL_MSN *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+							      /*#define NDPI_SERVICE_AMAZON				178 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+							      /*#define NDPI_SERVICE_EBAY				179 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+							      /*#define NDPI_SERVICE_CNN				180 *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_SERVICE_DROPBOX				NDPI_PROTOCOL_DROPBOX	/* Tomasz Bujlow <tomasz@skatnet.dk> */
+									      /*#define NDPI_SERVICE_SKYPE				NDPI_PROTOCOL_SKYPE *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+									      /*#define NDPI_SERVICE_VIBER				NDPI_PROTOCOL_VIBER *//* Tomasz Bujlow <tomasz@skatnet.dk> */
+									      /*#define NDPI_SERVICE_YAHOO				NDPI_PROTOCOL_YAHOO *//* Tomasz Bujlow <tomasz@skatnet.dk> */
 
 /* UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE */
 #define NDPI_LAST_IMPLEMENTED_PROTOCOL			183

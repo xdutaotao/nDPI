@@ -16,10 +16,9 @@
 extern "C" {
 #endif
 
-extern int json_c_get_random_seed();
+	extern int json_c_get_random_seed();
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
